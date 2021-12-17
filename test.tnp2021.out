@@ -1,0 +1,735 @@
+.586
+.model flat, stdcall
+
+includelib kernel32.lib
+includelib ../CourseProject/Release/TNPSTL.lib
+includelib msvcrt.lib
+includelib Iphlpapi.lib
+
+GetProcessHeap proto :dword
+HeapAlloc proto :dword,:dword,:dword
+HeapFree proto :dword,:dword,:dword
+GetStdHandle proto :dword
+SetConsoleTitleA proto :dword
+WriteConsoleA proto :dword,:dword,:dword,:dword,:dword
+ExitProcess proto :dword
+toString proto :dword
+toInteger proto :dword
+inputInteger proto 
+inputString proto 
+shiftRight proto :dword,:dword
+shiftLeft proto :dword,:dword
+stringEquals proto :dword,:dword
+print proto :dword
+.stack 4096
+
+.const
+
+ConsoleTitle db "TNP2021 program", 0
+EmptyStr db 0
+literal0 db "[INFO] ",0
+literal1 db 10,0
+literal2 dd 1
+literal3 dd 0
+literal4 dd 0
+literal5 dd 2
+literal6 dd 4
+literal7 dd 2
+literal8 dd 1
+literal9 db "UwU",0
+literal10 db "uWu",0
+literal11 db "UWU",0
+literal12 db " ",0
+literal13 dd 0
+literal14 dd 1000
+literal15 dd 0
+literal16 dd 22
+literal17 dd 7
+literal18 dd 1
+literal19 dd 0
+literal20 dd 15
+literal21 dd 1
+literal22 dd 0
+literal23 dd 17
+literal24 dd 8192
+literal25 dd 18
+literal26 dd 18
+literal27 dd 12
+literal28 dd 19900
+literal29 dd 3516
+literal30 dd 14
+literal31 dd 4096
+literal32 dd 16
+literal33 dd 0
+literal34 dd 0
+literal35 dd 1
+literal36 dd 1
+literal37 db "a: ",0
+literal38 db 10,"b: ",0
+literal39 dd 2
+literal40 db "r: ",0
+literal41 dd 3
+literal42 db "x: ",0
+literal43 dd 0
+
+.data
+
+_@_test dd 0
+_@_firstIteration dd 0
+
+.code
+
+_@_info PROC uses eax ebx ecx edx edi esi, _@_info@_message :dword
+; { 
+; "[INFO] " output ; 
+mov eax,offset literal0
+pushad 
+push eax
+call print
+popad 
+; message output ; 
+mov eax,_@_info@_message
+pushad 
+push eax
+call print
+popad 
+; "\n" output ; 
+mov ebx,offset literal1
+pushad 
+push ebx
+call print
+popad 
+; } ; 
+ret 0
+_@_info ENDP
+
+_@_inc PROC uses eax ebx ecx edx edi esi, _@_inc@_a :dword
+; { 
+; a a 1 + = ; 
+mov eax,1
+mov ebx,_@_inc@_a
+add ebx,eax
+mov eax,_@_inc@_a
+mov eax,ebx
+mov _@_inc@_a,eax
+; } ; 
+ret 0
+_@_inc ENDP
+
+_@_sqrt PROC uses ebx ecx edx edi esi, _@_sqrt@_x :dword
+; { 
+; if ( x 0 < ) { 
+mov eax,0
+mov ebx,_@_sqrt@_x
+cmp ebx,eax
+jge less0ge
+mov ebx,1
+jmp less0end
+less0ge:
+xor ebx,ebx
+less0end:
+cmp ebx,0
+je if0end
+pushad 
+; return ( 0 ) ; 
+mov eax,0
+add esp,32
+ret 4
+; } elseif ( x 2 < ) { 
+popad 
+jmp ifBlock0end
+if0end:
+mov eax,2
+mov ebx,_@_sqrt@_x
+cmp ebx,eax
+jge less1ge
+mov ebx,1
+jmp less1end
+less1ge:
+xor ebx,ebx
+less1end:
+cmp ebx,0
+je if1end
+pushad 
+; return ( x ) ; 
+mov eax,_@_sqrt@_x
+add esp,32
+ret 4
+; } ; 
+popad 
+if1end:
+ifBlock0end:
+; create integer small_cand ; 
+xor eax,eax
+push eax
+; create integer large_cand ; 
+xor ebx,ebx
+push ebx
+; small_cand x 4 / sqrt 2 * = ; 
+mov ecx,4
+mov esi,eax
+mov eax,_@_sqrt@_x
+cdq 
+idiv ecx
+push eax
+call _@_sqrt
+mov ecx,2
+cdq 
+imul ecx
+mov esi,eax
+mov [esp+4],esi
+; large_cand small_cand 1 + = ; 
+mov eax,1
+mov ecx,[esp+4]
+add ecx,eax
+mov ebx,ecx
+mov [esp],ebx
+; if ( large_cand large_cand * x > ) { 
+mov ebx,[esp]
+mov eax,[esp]
+cdq 
+imul ebx
+mov ecx,_@_sqrt@_x
+cmp eax,ecx
+jle more0le
+mov eax,1
+jmp more0end
+more0le:
+xor eax,eax
+more0end:
+cmp eax,0
+je if2end
+pushad 
+; return ( small_cand ) ; 
+mov eax,[esp+36]
+add esp,96
+ret 4
+; } else { 
+popad 
+mov ebx,[esp]
+mov ecx,_@_sqrt@_x
+jmp ifBlock2end
+if2end:
+pushad 
+; return ( large_cand ) ; 
+mov eax,[esp+32]
+add esp,96
+ret 4
+; } ; 
+popad 
+mov ebx,[esp]
+mov ecx,_@_sqrt@_x
+if3end:
+ifBlock2end:
+; } ; 
+add esp,8
+_@_sqrt ENDP
+
+_@_uwu PROC uses eax ebx ecx edx edi esi, _@_uwu@_u :dword, _@_uwu@_v :dword, _@_uwu@_w :dword
+; { 
+; u "UwU" = ; 
+mov eax,offset literal9
+mov ebx,_@_uwu@_u
+mov ebx,eax
+mov _@_uwu@_u,ebx
+; v "uWu" = ; 
+mov eax,offset literal10
+mov ebx,_@_uwu@_v
+mov ebx,eax
+mov _@_uwu@_v,ebx
+; w "UWU" = ; 
+mov eax,offset literal11
+mov ebx,_@_uwu@_w
+mov ebx,eax
+mov _@_uwu@_w,ebx
+; } ; 
+ret 0
+_@_uwu ENDP
+
+_@_fibonacci PROC uses ebx ecx edx edi esi, _@_fibonacci@_a :dword, _@_fibonacci@_b :dword
+; { 
+; create integer c ; 
+xor eax,eax
+push eax
+; c a b + = ; 
+mov ebx,_@_fibonacci@_b
+mov ecx,_@_fibonacci@_a
+add ecx,ebx
+mov eax,ecx
+mov [esp],eax
+; if ( firstIteration ) { 
+mov eax,_@_firstIteration
+cmp eax,0
+je if4end
+pushad 
+; a toString output ; 
+mov eax,_@_fibonacci@_a
+push eax
+mov ebx,eax
+call toString
+pushad 
+push eax
+call print
+popad 
+; " " output ; 
+mov eax,offset literal12
+pushad 
+push eax
+call print
+popad 
+; b toString output ; 
+mov eax,_@_fibonacci@_b
+push eax
+mov esi,eax
+call toString
+pushad 
+push eax
+call print
+popad 
+; firstIteration 0 = ; 
+mov eax,literal13
+mov ecx,_@_firstIteration
+mov ecx,eax
+mov _@_firstIteration,ecx
+; } ; 
+popad 
+mov ebx,_@_fibonacci@_b
+if4end:
+ifBlock4end:
+; " " output ; 
+mov eax,offset literal12
+pushad 
+push eax
+call print
+popad 
+; if ( c 1000 < ) { 
+mov eax,1000
+mov ecx,[esp]
+cmp ecx,eax
+jge less2ge
+mov ecx,1
+jmp less2end
+less2ge:
+xor ecx,ecx
+less2end:
+cmp ecx,0
+je if5end
+pushad 
+; c toString output ; 
+mov eax,[esp+32]
+push eax
+mov ebx,eax
+call toString
+pushad 
+push eax
+call print
+popad 
+; c b fibonacci ; 
+push ebx
+mov eax,_@_fibonacci@_b
+push eax
+mov ecx,eax
+call _@_fibonacci
+; } ; 
+popad 
+mov ebx,_@_fibonacci@_b
+if5end:
+ifBlock5end:
+; return ( 0 ) ; 
+mov eax,0
+add esp,4
+ret 8
+; } ; 
+add esp,4
+_@_fibonacci ENDP
+
+_@_circleArea PROC uses ebx ecx edx edi esi, _@_circleArea@_radius :dword
+; { 
+; create integer a ; 
+xor eax,eax
+push eax
+; a radius radius * radius * 22 * 7 / radius / = ; 
+mov ebx,_@_circleArea@_radius
+mov ecx,eax
+mov eax,_@_circleArea@_radius
+cdq 
+imul ebx
+cdq 
+imul ebx
+mov esi,22
+cdq 
+imul esi
+mov esi,7
+cdq 
+idiv esi
+cdq 
+idiv ebx
+mov ecx,eax
+mov [esp],ecx
+; return ( a ) ; 
+mov eax,[esp]
+add esp,4
+ret 4
+; } ; 
+add esp,4
+_@_circleArea ENDP
+
+_@_f PROC uses ebx ecx edx edi esi, _@_f@_x :dword
+; { 
+; x x * x * x x * + x + 1 + toString output ; 
+mov ebx,_@_f@_x
+mov eax,_@_f@_x
+cdq 
+imul ebx
+cdq 
+imul ebx
+mov ecx,eax
+mov eax,_@_f@_x
+cdq 
+imul ebx
+add ecx,eax
+add ecx,ebx
+mov eax,1
+add ecx,eax
+push ecx
+call toString
+pushad 
+push eax
+call print
+popad 
+; " " output ; 
+mov eax,offset literal12
+pushad 
+push eax
+call print
+popad 
+; return ( 0 ) ; 
+mov eax,0
+ret 4
+; } ; 
+_@_f ENDP
+
+_@_loopSimulation PROC uses ebx ecx edx edi esi, _@_loopSimulation@_iteration :dword
+; { 
+; iteration f ; 
+mov eax,_@_loopSimulation@_iteration
+push eax
+mov ebx,eax
+call _@_f
+; if ( iteration 15 < ) { 
+mov eax,15
+cmp ebx,eax
+jge less3ge
+mov ebx,1
+jmp less3end
+less3ge:
+xor ebx,ebx
+less3end:
+cmp ebx,0
+je if6end
+pushad 
+; iteration iteration 1 + = ; 
+mov eax,1
+mov ebx,_@_loopSimulation@_iteration
+add ebx,eax
+mov eax,_@_loopSimulation@_iteration
+mov eax,ebx
+mov _@_loopSimulation@_iteration,eax
+; iteration loopSimulation ; 
+mov eax,_@_loopSimulation@_iteration
+push eax
+mov ebx,eax
+call _@_loopSimulation
+; } ; 
+popad 
+if6end:
+ifBlock6end:
+; return ( 0 ) ; 
+mov eax,0
+ret 4
+; } ; 
+_@_loopSimulation ENDP
+
+_@_fpsin PROC uses ebx ecx edx edi esi, _@_fpsin@_x :dword
+; { 
+; create integer c ; 
+xor eax,eax
+push eax
+; create integer y ; 
+xor ebx,ebx
+push ebx
+; c x 17 << = ; 
+mov ecx,17
+mov edx,_@_fpsin@_x
+shl edx,cl
+mov eax,edx
+mov [esp+4],eax
+; x x 8192 - = ; 
+mov eax,8192
+mov ecx,_@_fpsin@_x
+sub ecx,eax
+mov eax,_@_fpsin@_x
+mov eax,ecx
+mov _@_fpsin@_x,eax
+; x x 18 << = ; 
+mov ecx,18
+mov eax,_@_fpsin@_x
+shl eax,cl
+mov ecx,_@_fpsin@_x
+mov ecx,eax
+mov _@_fpsin@_x,ecx
+; x x 18 >> = ; 
+mov ecx,18
+mov eax,_@_fpsin@_x
+sar eax,cl
+mov ecx,_@_fpsin@_x
+mov ecx,eax
+mov _@_fpsin@_x,ecx
+; x x x * 12 >> = ; 
+mov ecx,_@_fpsin@_x
+mov eax,_@_fpsin@_x
+cdq 
+imul ecx
+mov edx,ecx
+mov ecx,12
+sar eax,cl
+mov edx,eax
+mov _@_fpsin@_x,edx
+; y 19900 3516 x * 14 >> - = ; 
+mov ecx,_@_fpsin@_x
+mov eax,3516
+cdq 
+imul ecx
+mov edx,ecx
+mov ecx,14
+sar eax,cl
+mov ecx,19900
+sub ecx,eax
+mov ebx,ecx
+mov [esp],ebx
+; y 4096 x y * 16 >> - = ; 
+mov ebx,[esp]
+mov eax,_@_fpsin@_x
+mov ecx,edx
+cdq 
+imul ebx
+mov edx,ecx
+mov ecx,16
+sar eax,cl
+mov ecx,4096
+sub ecx,eax
+mov ebx,ecx
+mov [esp],ebx
+; if ( c 0 >= ) { 
+mov eax,0
+mov ebx,[esp+4]
+cmp ebx,eax
+jl moreOrEquals0l
+mov ebx,1
+jmp moreOrEquals0end
+moreOrEquals0l:
+xor ebx,ebx
+moreOrEquals0end:
+cmp ebx,0
+je if7end
+pushad 
+; return ( y ) ; 
+mov eax,[esp+32]
+add esp,96
+ret 4
+; } else { 
+popad 
+mov edx,_@_fpsin@_x
+jmp ifBlock7end
+if7end:
+pushad 
+; return ( 0 y - ) ; 
+mov eax,[esp+32]
+mov ebx,0
+sub ebx,eax
+xchg ebx,eax
+add esp,96
+ret 4
+; } ; 
+popad 
+mov edx,_@_fpsin@_x
+if8end:
+ifBlock7end:
+; } ; 
+add esp,8
+_@_fpsin ENDP
+
+main PROC
+push offset consoleTitle
+call SetConsoleTitleA
+
+; ) { 
+; create integer choise ; 
+xor eax,eax
+push eax
+; choise inputInteger = ; 
+mov ebx,eax
+call inputInteger
+mov ebx,eax
+mov [esp],ebx
+; if ( choise 1 == ) { 
+mov eax,1
+mov ebx,[esp]
+cmp ebx,eax
+jne eq0ne
+mov ebx,1
+jmp eq0end
+eq0ne:
+xor ebx,ebx
+eq0end:
+cmp ebx,0
+je if9end
+pushad 
+; firstIteration 1 = ; 
+mov eax,literal36
+mov ebx,_@_firstIteration
+mov ebx,eax
+mov _@_firstIteration,ebx
+; "a: " output ; 
+mov eax,offset literal37
+pushad 
+push eax
+call print
+popad 
+; create integer a ; 
+xor eax,eax
+push eax
+; a inputInteger = ; 
+mov ebx,eax
+call inputInteger
+mov ebx,eax
+mov [esp],ebx
+; "\nb: " output ; 
+mov eax,offset literal38
+pushad 
+push eax
+call print
+popad 
+; create integer b ; 
+xor eax,eax
+push eax
+; b inputInteger = ; 
+mov ebx,eax
+call inputInteger
+mov ebx,eax
+mov [esp],ebx
+; "\n" output ; 
+mov eax,offset literal1
+pushad 
+push eax
+call print
+popad 
+; b a fibonacci ; 
+mov eax,[esp]
+push eax
+mov ebx,[esp+8]
+push ebx
+mov ecx,eax
+call _@_fibonacci
+; } elseif ( choise 2 == ) { 
+add esp,8
+popad 
+jmp ifBlock9end
+if9end:
+mov eax,2
+mov ebx,[esp]
+cmp ebx,eax
+jne eq1ne
+mov ebx,1
+jmp eq1end
+eq1ne:
+xor ebx,ebx
+eq1end:
+cmp ebx,0
+je if10end
+pushad 
+; "r: " output ; 
+mov eax,offset literal40
+pushad 
+push eax
+call print
+popad 
+; create integer r ; 
+xor eax,eax
+push eax
+; r inputInteger = ; 
+mov ebx,eax
+call inputInteger
+mov ebx,eax
+mov [esp],ebx
+; r circleArea toString output ; 
+mov eax,[esp]
+push eax
+mov ebx,eax
+call _@_circleArea
+push eax
+call toString
+pushad 
+push eax
+call print
+popad 
+; r circleArea ; 
+push ebx
+call _@_circleArea
+; } elseif ( choise 3 == ) { 
+add esp,4
+popad 
+jmp ifBlock9end
+if10end:
+mov eax,3
+mov ebx,[esp]
+cmp ebx,eax
+jne eq2ne
+mov ebx,1
+jmp eq2end
+eq2ne:
+xor ebx,ebx
+eq2end:
+cmp ebx,0
+je if11end
+pushad 
+; "x: " output ; 
+mov eax,offset literal42
+pushad 
+push eax
+call print
+popad 
+; create integer x ; 
+xor eax,eax
+push eax
+; x inputInteger = ; 
+mov ebx,eax
+call inputInteger
+mov ebx,eax
+mov [esp],ebx
+; x fpsin toString output ; 
+mov eax,[esp]
+push eax
+mov ebx,eax
+call _@_fpsin
+push eax
+call toString
+pushad 
+push eax
+call print
+popad 
+; } ; 
+add esp,4
+popad 
+if11end:
+ifBlock9end:
+; return ( 0 ) ; 
+mov eax,0
+add esp,4
+push eax
+call ExitProcess
+; } ; 
+add esp,4
+main ENDP
+
+END main

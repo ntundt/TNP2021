@@ -1,0 +1,132 @@
+create integer test;
+
+create proc function info(string message) {
+    output("[INFO] ");
+    output(message);
+    output("\n");
+};
+
+create integer firstIteration;
+
+create proc function inc(integer a) {
+    a = (a + 1);
+};
+
+create integer function sqrt(integer x) {
+    if (x < 0) {
+        return(0);
+    } elseif (x < 2) {
+        return(x);
+    };
+
+    create integer small_cand;
+    create integer large_cand;
+    small_cand = sqrt(x / 4) * 2;
+    large_cand = small_cand + 1;
+    if (large_cand * large_cand > x) {
+        return(small_cand);
+    } else {
+        return(large_cand);
+    };
+};
+
+create proc function uwu(string u, string v, string w) {
+    u = "UwU";
+    v = "uWu";
+    w = "UWU";
+};
+
+create integer function fibonacci(integer a, integer b) {
+    create integer c;
+    c = a + b;
+
+    if (firstIteration) {
+        output(toString(a));
+        output(" ");
+        output(toString(b));
+        firstIteration = 0;
+    };
+
+    output(" ");
+    if (c < 1000) {
+        output(toString(c));
+        fibonacci(b, c);
+    };
+
+    return(0);
+};
+
+create integer function circleArea(integer radius) {
+    create integer a;
+    a = radius * radius * radius * 22 / 7 / radius;
+    return(a);
+};
+
+create integer function f(integer x) {
+    output(toString(x*x*x + x*x + x + 1));
+    output(" ");
+    return(0);
+};
+
+create integer function loopSimulation(integer iteration) {
+    f(iteration);
+    if (iteration < 15) {
+        iteration = iteration + 1;
+        loopSimulation(iteration);
+    };
+    return(0);
+};
+
+create integer function fpsin(integer x) {
+    create integer c;
+    create integer y;
+
+    c = x << 17;
+    x = x - 8192;
+    
+    x = x << 18;
+    x = x >> 18;
+    x = x*x >> 12;
+
+    y = 19900 - (3516*x >> 14);
+    y = 4096 - (x*y >> 16);
+
+    if (c >= 0) {
+        return(y);
+    } else {
+        return(0 - y);
+    };
+};
+
+create integer function main() {
+    create integer choise;
+    choise = inputInteger();
+    
+    if (choise == 1) {
+        firstIteration = 1;
+
+        output("a: ");
+        create integer a;
+        a = inputInteger();
+        
+        output("\nb: ");
+        create integer b;
+        b = inputInteger();
+        
+        output("\n");
+        fibonacci(a, b);
+    } elseif (choise == 2) {
+        output("r: ");
+        create integer r;
+        r = inputInteger();
+        output(toString(circleArea(r)));
+        circleArea(r);
+    } elseif (choise == 3) {
+        output("x: ");
+        create integer x;
+        x = inputInteger();
+        output(toString(fpsin(x)));
+    };
+
+    return(0);
+};
