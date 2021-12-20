@@ -17,6 +17,7 @@ namespace Parm
 		wchar_t out[PARM_MAX_SIZE] = L"";
 		wchar_t log[PARM_MAX_SIZE] = L"";
 		bool output = true;
+		bool compileAsm = false;
 	};
 
 	PARM getparm(int argc, _TCHAR* argv[]);

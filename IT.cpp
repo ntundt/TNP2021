@@ -108,17 +108,17 @@ namespace IT {
 	{
 		std::string str;
 		std::stringstream result(str);
-		result << std::setw(10) << std::left << "Тип"
-			<< std::setw(18) << std::left << "Вид"
-			<< std::setw(4) << std::left << "ЛТ№"
-			<< std::setw(32) << std::left << "Имя идентификатора"
-			<< std::setw(40) << std::left << "Путь"
-			<< std::setw(10) << std::left << "Значение"
-			<< '\n';
+		result << '|' << std::setw(9) << std::left << "Тип"
+			<< '|' << std::setw(17) << std::left << "Вид"
+			<< '|' << std::setw(4) << std::left << "ТЛ№"
+			<< '|' << std::setw(32) << std::left << "Имя идентификатора"
+			<< '|' << std::setw(40) << std::left << "Путь"
+			<< '|' << std::setw(10) << std::left << "Значение"
+			<< "|\n";
 
 		for (int i = 0; i < idtable.size; i++)
 		{
-			result << std::setw(10) << std::left;
+			result << '|' << std::setw(9) << std::left;
 			if (idtable.table[i].iddatatype == IdDatatype::undefined)
 			{
 				result << "undefined";
@@ -136,7 +136,7 @@ namespace IT {
 				result << "procedure";
 			}
 
-			result << std::setw(18) << std::left;
+			result << '|' << std::setw(17) << std::left;
 			if (idtable.table[i].idtype == IdType::function)
 			{
 				result << "function";
@@ -158,11 +158,11 @@ namespace IT {
 				result << "variable";
 			}
 
-			result << std::setw(4) << std::left << idtable.table[i].lexTableFirstEntry;
-			result << std::setw(32) << std::left << idtable.table[i].name;
-			result << std::setw(40) << std::left << idtable.table[i].path;
-			result << std::setw(10) << std::left << idtable.table[i].value;
-			result << '\n';
+			result << '|' << std::setw(4) << std::left << idtable.table[i].lexTableFirstEntry;
+			result << '|' << std::setw(32) << std::left << idtable.table[i].name;
+			result << '|' << std::setw(40) << std::left << idtable.table[i].path;
+			result << '|' << std::setw(10) << std::left << idtable.table[i].value;
+			result << "|\n";
 		}
 		return result.str();
 	}

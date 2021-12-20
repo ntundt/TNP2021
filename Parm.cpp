@@ -34,6 +34,10 @@ namespace Parm {
 			{
 				result->output = false;
 			}
+			else if (wcscmp(argv[i], L"--asmcompile") == 0)
+			{
+				result->compileAsm = true;
+			}
 		}
 
 		if (wcscmp(result->in, L"") == 0)

@@ -42,7 +42,8 @@ namespace CodeGenerator
 		result = "\"" + result + "\",0";
 		ReplaceStringInPlace(result, "\"\\n\"", "10");
 		ReplaceStringInPlace(result, "\"\\n", "10,\"");
-		ReplaceStringInPlace(result, "\\n\"", "\"10,");
+		ReplaceStringInPlace(result, "\\n\"", "\",10");
+		ReplaceStringInPlace(result, "\\n", "\",10,\"");
 		size_t size = result.length() + 1;
 		char* r = new char[size];
 		strcpy_s(r, size, result.c_str());
@@ -273,6 +274,7 @@ namespace CodeGenerator
 			{ "shiftRight", 2 },
 			{ "shiftLeft", 2 },
 			{ "stringEquals", 2 },
+			{ "stringConcat", 2 },
 			{ "print", 1 }
 		};
 
@@ -295,7 +297,7 @@ namespace CodeGenerator
 			s << ".586\n";
 			s << ".model flat, stdcall\n\n";
 			s << "includelib kernel32.lib\n";
-			s << "includelib ../CourseProject/Release/TNPSTL.lib\n";
+			s << "includelib TNPSTL.lib\n";
 			s << "includelib msvcrt.lib\n";
 			s << "includelib Iphlpapi.lib\n\n";
 			for (unsigned int i = 0; i < externalFunctions.size(); i++)
@@ -1094,7 +1096,12 @@ namespace CodeGenerator
 					
 					function->AddCommand("call", fqin);
 
-					uint32_t size = 0, sizeTemp;
+					uint32_t size = procParameters.size(), sizeTemp;
+					while (size != 0)
+					{
+						memory->stack.pop_front();
+						size--;
+					}
 					while (!procParameters.empty())
 					{
 						const char* fqin1 = IT::GetQualifiedIdentifierName(*procParameters.front());
@@ -1109,6 +1116,11 @@ namespace CodeGenerator
 
 					while (size > 0)
 					{
+						Register* f = memory->isStoredInRegisters(save);
+						if (f != nullptr)
+						{
+							memory->setRegisterContents(f->name, "");
+						}
 						Register* temp = memory->loadToRegister(*function, save);
 						for (unsigned int i = 0; i < sizeTemp - size + 1; i++)
 						{
@@ -1293,9 +1305,9 @@ namespace CodeGenerator
 					}
 					else if (operand1type == IT::IdDatatype::string && operand2type == IT::IdDatatype::string)
 					{
-						function->AddCommand("push", operand1->name);
 						function->AddCommand("push", operand2->name);
-						function->AddCommand("call", "strcon");
+						function->AddCommand("push", operand1->name);
+						function->AddCommand("call", "stringConcat");
 						memory->setRegisterContents("eax", nextLabel("#PRNTemp", PRNCounter, ""));
 
 						metIdentifiers.push_back(PRNTemp(IT::IdDatatype::string, PRNCounter++));
@@ -1372,6 +1384,43 @@ namespace CodeGenerator
 						metIdentifiers.push_back(PRNTemp(IT::IdDatatype::integer, PRNCounter++));
 					}
 				}
+				else if (strcmp(lexemeTable.table[index].originalLexeme, "!=") == 0)
+				{
+					if (operand1type == IT::IdDatatype::integer && operand2type == IT::IdDatatype::integer)
+					{
+						static int notEqualsCounter = 0;
+						function->AddCommand("cmp", operand1->name, operand2->name);
+						memory->setRegisterContents(operand1->name, nextLabel("#PRNTemp", PRNCounter, ""));
+						char* cmpEquals = nextLabel("neq", notEqualsCounter, "e");
+						char* cmpEnd = nextLabel("neq", notEqualsCounter++, "end");
+						function->AddCommand("je", cmpEquals);
+						function->AddCommand("mov", operand1->name, "1");
+						function->AddCommand("jmp", cmpEnd);
+						function->AddLabel(cmpEquals);
+						function->AddCommand("xor", operand1->name, operand1->name);
+						function->AddLabel(cmpEnd);
+
+						memory->useRegister(operand1->name);
+						memory->useRegister(operand2->name);
+
+						metIdentifiers.push_back(PRNTemp(IT::IdDatatype::integer, PRNCounter++));
+					}
+					else if (operand1type == IT::IdDatatype::string && operand2type == IT::IdDatatype::string)
+					{
+						function->AddCommand("push", operand1->name);
+						memory->setRegisterContents(operand1->name, "");
+						function->AddCommand("push", operand2->name);
+						memory->setRegisterContents(operand2->name, "");
+						memory->freeRegister(*function, "eax");
+						function->AddCommand("call", "stringEquals");
+						function->AddCommand("xor", "eax", "1");
+
+						memory->useRegister("eax");
+						memory->setRegisterContents("eax", nextLabel("#PRNTemp", PRNCounter, ""));
+
+						metIdentifiers.push_back(PRNTemp(IT::IdDatatype::integer, PRNCounter++));
+					}
+				}
 				else if (strcmp(lexemeTable.table[index].originalLexeme, "<") == 0)
 				{
 					static int lessThanCounter = 0;
@@ -1399,7 +1448,7 @@ namespace CodeGenerator
 					char* cmpGreater = nextLabel("lessOrEquals", lessOrEqualsCounter, "g");
 					function->AddCommand("jg", cmpGreater);
 					function->AddCommand("mov", operand1->name, "1");
-					char* cmpEnd = nextLabel("less", lessOrEqualsCounter++, "end");
+					char* cmpEnd = nextLabel("lessOrEquals", lessOrEqualsCounter++, "end");
 					function->AddCommand("jmp", cmpEnd);
 					function->AddLabel(cmpGreater);
 					function->AddCommand("xor", operand1->name, operand1->name);

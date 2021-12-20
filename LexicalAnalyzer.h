@@ -32,6 +32,17 @@ namespace LexicalAnalyzer
 		FSM::State()
 	);
 
+	FSM::FiniteStateMachine string_(
+		6,
+		FSM::State(1, FSM::StateRelation('s', 1)),
+		FSM::State(1, FSM::StateRelation('t', 2)),
+		FSM::State(1, FSM::StateRelation('r', 3)),
+		FSM::State(1, FSM::StateRelation('i', 4)),
+		FSM::State(1, FSM::StateRelation('n', 5)),
+		FSM::State(1, FSM::StateRelation('g', 6)),
+		FSM::State()
+	);
+
 	static FSM::FiniteStateMachine string_literal_(
 		4,
 		FSM::State(2, FSM::StateRelation('\'', 1), FSM::StateRelation('\'', 2)),

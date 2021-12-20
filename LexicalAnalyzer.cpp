@@ -159,21 +159,33 @@ namespace LexicalAnalyzer
 		{
 			return LEX_EQUALS;
 		}
-		else if (isIdentifier(lexeme))
+		else if (FSM::parseChain(LexicalAnalyzer::identifier_, lexeme))
 		{
 			return LEX_IDENTIFIER;
 		}
 		return LEX_EMPTY;
 	}
 
-	void getRecognizerPos(std::string prefix, int& row, int& column)
+	void getRecognizerPos(std::string prefix, std::string prevLexeme, int& row, int& column)
 	{
+		for (std::string::iterator it = prevLexeme.begin(); it < prevLexeme.end(); it++)
+		{
+			if (*it == '\n')
+			{
+				row++;
+				column = 1;
+			}
+			else
+			{
+				column++;
+			}
+		}
 		for (std::string::iterator it = prefix.begin(); it < prefix.end(); it++)
 		{
 			if (*it == '\n')
 			{
 				row++;
-				column = 0;
+				column = 1;
 			}
 			else
 			{
@@ -368,6 +380,8 @@ namespace LexicalAnalyzer
 
 		int lexTableIndex = 0;
 
+		std::string prevLexeme = "";
+
 		while (std::regex_search(prg, match, Specification::lexeme))
 		{
 			lexTableIndex++;
@@ -376,7 +390,7 @@ namespace LexicalAnalyzer
 			value = nullptr;
 
 			type = getLexemeType(match[0].str().c_str(), datatype, value);
-			getRecognizerPos(match.prefix().str(), row, column);
+			getRecognizerPos(match.prefix().str(), prevLexeme, row, column);
 			LT::Entry* lexTableEntry = new LT::Entry(type, row, column);
 
 			char* text = new char[match[0].str().length() + 1];
@@ -426,6 +440,7 @@ namespace LexicalAnalyzer
 			LT::Add(lexTable, *lexTableEntry);
 			delete lexTableEntry;
 			prg = match.suffix();
+			prevLexeme = match[0].str();
 		}
 
 		fillIdTable(lexTable, 0, idTable);

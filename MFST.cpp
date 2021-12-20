@@ -189,11 +189,13 @@ namespace MFST {
 			rc = true;
 			break;
 		case RC_STEP::NS_NORULE:
+		{
 			MFST_TRACE4("------>NS_NORULE")
-			std::cout << "------------------------------" << std::endl;
-			std::cout << getDiagnosis(0, buf) << std::endl;
-			/*std::cout << getDiagnosis(1, buf) << std::endl;
-			std::cout << getDiagnosis(2, buf) << std::endl;*/
+				std::cout << "------------------------------" << std::endl;
+			//std::cout << getDiagnosis(0, buf) << std::endl;
+			int lpos = diagnosis[0].lenta_position;
+			throw ERROR_THROW_IN(grebach.getRule(diagnosis[0].nrule).iderror, lex.table[lpos].stringNumber, lex.table[lpos].stringPosition);
+		}
 			break;
 		case RC_STEP::NS_NORULECHAIN:
 			MFST_TRACE4("------>NS_NORULENORULECHAIN") 

@@ -1,7 +1,3 @@
-create proc function inc(integer a) {
-    a = (a + 1);
-};
-
 create integer function sqrt(integer x) {
     if (x < 0) {
         return(0);
@@ -79,7 +75,7 @@ create integer function fpsin(integer x) {
 };
 
 create integer function main() {
-    output("1 - Fibonacci sequence\n2 - circle radius\n3 - sine approximation\n4 - square root");
+    output("1 - Fibonacci sequence\n2 - circle area\n3 - sine approximation\n4 - square root\n5 - increment");
 
     create integer choise;
     choise = inputInteger();
@@ -100,7 +96,6 @@ create integer function main() {
     } elseif (choise == 2) {
         output("r: ");
         output(toString(circleArea(inputInteger())));
-        circleArea(r);
     } elseif (choise == 3) {
         output("x: ");
         create integer x;
@@ -109,6 +104,11 @@ create integer function main() {
     } elseif (choise == 4) {
         output("x: ");
         output(toString(sqrt(inputInteger())));
+    } elseif (choise == 5) {
+        create integer a;
+        a = inputInteger();
+        inc(a);
+        output(toString(a));
     } else {
         output("Error");
         return(0 - 1);

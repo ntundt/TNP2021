@@ -69,9 +69,9 @@ namespace FSM {
 		return rc;
 	}
 
-	bool parseChain(FiniteStateMachine& fsm, char* chain)
+	bool parseChain(FiniteStateMachine& fsm, const char* chain)
 	{
-		fsm.chain = chain;
+		fsm.chain = (char*)chain;
 		fsm.position = -1;
 		short* rstates = new short[fsm.numberOfStates];
 		memset(rstates, 0xFF, sizeof(short) * fsm.numberOfStates);

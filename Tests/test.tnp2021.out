@@ -20,6 +20,7 @@ inputString proto
 shiftRight proto :dword,:dword
 shiftLeft proto :dword,:dword
 stringEquals proto :dword,:dword
+stringConcat proto :dword,:dword
 print proto :dword
 .stack 4096
 
@@ -27,102 +28,55 @@ print proto :dword
 
 ConsoleTitle db "TNP2021 program", 0
 EmptyStr db 0
-literal0 dd 8
-literal1 db "[INFO] ",0
-literal2 db 10,0
-literal3 dd 1
-literal4 dd 0
-literal5 dd 0
-literal6 dd 2
-literal7 dd 4
-literal8 dd 2
-literal9 dd 1
-literal10 db "UwU",0
-literal11 db "uWu",0
-literal12 db "UWU",0
-literal13 db " ",0
+literal0 dd 0
+literal1 dd 0
+literal2 dd 2
+literal3 dd 4
+literal4 dd 2
+literal5 dd 1
+literal6 dd 1
+literal7 db " ",0
+literal8 dd 0
+literal9 dd 1000
+literal10 dd 0
+literal11 dd 22
+literal12 dd 7
+literal13 dd 1
 literal14 dd 0
-literal15 dd 1000
-literal16 dd 0
-literal17 dd 22
-literal18 dd 7
-literal19 dd 1
-literal20 dd 0
-literal21 dd 15
-literal22 dd 1
-literal23 dd 0
-literal24 dd 17
-literal25 dd 8192
-literal26 dd 18
-literal27 dd 18
-literal28 dd 12
-literal29 dd 19900
-literal30 dd 3516
-literal31 dd 14
-literal32 dd 4096
-literal33 dd 16
-literal34 dd 0
-literal35 dd 0
-literal36 dd 1
-literal37 dd 1
-literal38 db "a: ",0
-literal39 db 10,"b: ",0
-literal40 dd 2
-literal41 db "r: ",0
-literal42 dd 3
-literal43 db "x: ",0
-literal44 dd 0
+literal15 dd 17
+literal16 dd 8192
+literal17 dd 18
+literal18 dd 18
+literal19 dd 12
+literal20 dd 19900
+literal21 dd 3516
+literal22 dd 14
+literal23 dd 4096
+literal24 dd 16
+literal25 dd 0
+literal26 dd 0
+literal27 db "1 - Fibonacci sequence",10,"2 - circle area",10,"3 - sine approximation",10,"4 - square root",10,"5 - increment",0
+literal28 dd 1
+literal29 dd 1
+literal30 db "a: ",0
+literal31 db "b: ",0
+literal32 db 10,0
+literal33 dd 2
+literal34 db "r: ",0
+literal35 dd 3
+literal36 db "x: ",0
+literal37 dd 4
+literal38 dd 5
+literal39 db "Error",0
+literal40 dd 0
+literal41 dd 1
+literal42 dd 0
 
 .data
 
-_@_test dd 0
-_@_firstIteration dd 0
+_@_fibFirstIteration dd 0
 
 .code
-
-_@_info PROC uses eax ebx ecx edx edi esi, _@_info@_message :dword
-; { 
-; 10o toString output ; 
-push 8
-call toString
-pushad 
-push eax
-call print
-popad 
-; "[INFO] " output ; 
-mov eax,offset literal1
-pushad 
-push eax
-call print
-popad 
-; message output ; 
-mov eax,_@_info@_message
-pushad 
-push eax
-call print
-popad 
-; "\n" output ; 
-mov ebx,offset literal2
-pushad 
-push ebx
-call print
-popad 
-; } ; 
-ret 0
-_@_info ENDP
-
-_@_inc PROC uses eax ebx ecx edx edi esi, _@_inc@_a :dword
-; { 
-; a a 1 + = ; 
-mov eax,1
-mov ebx,_@_inc@_a
-add ebx,eax
-mov eax,_@_inc@_a
-mov eax,ebx
-mov _@_inc@_a,eax
-; } ; 
-ret 0
-_@_inc ENDP
 
 _@_sqrt PROC uses ebx ecx edx edi esi, _@_sqrt@_x :dword
 ; { 
@@ -233,26 +187,18 @@ ifBlock2end:
 add esp,8
 _@_sqrt ENDP
 
-_@_uwu PROC uses eax ebx ecx edx edi esi, _@_uwu@_u :dword, _@_uwu@_v :dword, _@_uwu@_w :dword
+_@_inc PROC uses eax ebx ecx edx edi esi, _@_inc@_a :dword
 ; { 
-; u "UwU" = ; 
-mov eax,offset literal10
-mov ebx,_@_uwu@_u
-mov ebx,eax
-mov _@_uwu@_u,ebx
-; v "uWu" = ; 
-mov eax,offset literal11
-mov ebx,_@_uwu@_v
-mov ebx,eax
-mov _@_uwu@_v,ebx
-; w "UWU" = ; 
-mov eax,offset literal12
-mov ebx,_@_uwu@_w
-mov ebx,eax
-mov _@_uwu@_w,ebx
+; a a 1 + = ; 
+mov eax,1
+mov ebx,_@_inc@_a
+add ebx,eax
+mov eax,_@_inc@_a
+mov eax,ebx
+mov _@_inc@_a,eax
 ; } ; 
 ret 0
-_@_uwu ENDP
+_@_inc ENDP
 
 _@_fibonacci PROC uses ebx ecx edx edi esi, _@_fibonacci@_a :dword, _@_fibonacci@_b :dword
 ; { 
@@ -265,8 +211,8 @@ mov ecx,_@_fibonacci@_a
 add ecx,ebx
 mov eax,ecx
 mov [esp],eax
-; if ( firstIteration ) { 
-mov eax,_@_firstIteration
+; if ( fibFirstIteration ) { 
+mov eax,_@_fibFirstIteration
 cmp eax,0
 je if4end
 pushad 
@@ -280,7 +226,7 @@ push eax
 call print
 popad 
 ; " " output ; 
-mov eax,offset literal13
+mov eax,offset literal7
 pushad 
 push eax
 call print
@@ -294,18 +240,18 @@ pushad
 push eax
 call print
 popad 
-; firstIteration 0 = ; 
-mov eax,literal14
-mov ecx,_@_firstIteration
+; fibFirstIteration 0 = ; 
+mov eax,literal8
+mov ecx,_@_fibFirstIteration
 mov ecx,eax
-mov _@_firstIteration,ecx
+mov _@_fibFirstIteration,ecx
 ; } ; 
 popad 
 mov ebx,_@_fibonacci@_b
 if4end:
 ifBlock4end:
 ; " " output ; 
-mov eax,offset literal13
+mov eax,offset literal7
 pushad 
 push eax
 call print
@@ -406,7 +352,7 @@ push eax
 call print
 popad 
 ; " " output ; 
-mov eax,offset literal13
+mov eax,offset literal7
 pushad 
 push eax
 call print
@@ -416,47 +362,6 @@ mov eax,0
 ret 4
 ; } ; 
 _@_f ENDP
-
-_@_loopSimulation PROC uses ebx ecx edx edi esi, _@_loopSimulation@_iteration :dword
-; { 
-; iteration f ; 
-mov eax,_@_loopSimulation@_iteration
-push eax
-mov ebx,eax
-call _@_f
-; if ( iteration 15 < ) { 
-mov eax,15
-cmp ebx,eax
-jge less3ge
-mov ebx,1
-jmp less3end
-less3ge:
-xor ebx,ebx
-less3end:
-cmp ebx,0
-je if6end
-pushad 
-; iteration iteration 1 + = ; 
-mov eax,1
-mov ebx,_@_loopSimulation@_iteration
-add ebx,eax
-mov eax,_@_loopSimulation@_iteration
-mov eax,ebx
-mov _@_loopSimulation@_iteration,eax
-; iteration loopSimulation ; 
-mov eax,_@_loopSimulation@_iteration
-push eax
-mov ebx,eax
-call _@_loopSimulation
-; } ; 
-popad 
-if6end:
-ifBlock6end:
-; return ( 0 ) ; 
-mov eax,0
-ret 4
-; } ; 
-_@_loopSimulation ENDP
 
 _@_fpsin PROC uses ebx ecx edx edi esi, _@_fpsin@_x :dword
 ; { 
@@ -539,7 +444,7 @@ moreOrEquals0l:
 xor ebx,ebx
 moreOrEquals0end:
 cmp ebx,0
-je if7end
+je if6end
 pushad 
 ; return ( y ) ; 
 mov eax,[esp+32]
@@ -548,8 +453,8 @@ ret 4
 ; } else { 
 popad 
 mov edx,_@_fpsin@_x
-jmp ifBlock7end
-if7end:
+jmp ifBlock6end
+if6end:
 pushad 
 ; return ( 0 y - ) ; 
 mov eax,[esp+32]
@@ -561,8 +466,8 @@ ret 4
 ; } ; 
 popad 
 mov edx,_@_fpsin@_x
-if8end:
-ifBlock7end:
+if7end:
+ifBlock6end:
 ; } ; 
 add esp,8
 _@_fpsin ENDP
@@ -572,6 +477,12 @@ push offset consoleTitle
 call SetConsoleTitleA
 
 ; ) { 
+; "1 - Fibonacci sequence\n2 - cir output ; 
+mov eax,offset literal27
+pushad 
+push eax
+call print
+popad 
 ; create integer choise ; 
 xor eax,eax
 push eax
@@ -591,15 +502,15 @@ eq0ne:
 xor ebx,ebx
 eq0end:
 cmp ebx,0
-je if9end
+je if8end
 pushad 
-; firstIteration 1 = ; 
-mov eax,literal37
-mov ebx,_@_firstIteration
+; fibFirstIteration 1 = ; 
+mov eax,literal29
+mov ebx,_@_fibFirstIteration
 mov ebx,eax
-mov _@_firstIteration,ebx
+mov _@_fibFirstIteration,ebx
 ; "a: " output ; 
-mov eax,offset literal38
+mov eax,offset literal30
 pushad 
 push eax
 call print
@@ -612,8 +523,8 @@ mov ebx,eax
 call inputInteger
 mov ebx,eax
 mov [esp],ebx
-; "\nb: " output ; 
-mov eax,offset literal39
+; "b: " output ; 
+mov eax,offset literal31
 pushad 
 push eax
 call print
@@ -627,7 +538,7 @@ call inputInteger
 mov ebx,eax
 mov [esp],ebx
 ; "\n" output ; 
-mov eax,offset literal2
+mov eax,offset literal32
 pushad 
 push eax
 call print
@@ -642,8 +553,8 @@ call _@_fibonacci
 ; } elseif ( choise 2 == ) { 
 add esp,8
 popad 
-jmp ifBlock9end
-if9end:
+jmp ifBlock8end
+if8end:
 mov eax,2
 mov ebx,[esp]
 cmp ebx,eax
@@ -654,26 +565,17 @@ eq1ne:
 xor ebx,ebx
 eq1end:
 cmp ebx,0
-je if10end
+je if9end
 pushad 
 ; "r: " output ; 
-mov eax,offset literal41
+mov eax,offset literal34
 pushad 
 push eax
 call print
 popad 
-; create integer r ; 
-xor eax,eax
-push eax
-; r inputInteger = ; 
-mov ebx,eax
+; inputInteger circleArea toString output ; 
 call inputInteger
-mov ebx,eax
-mov [esp],ebx
-; r circleArea toString output ; 
-mov eax,[esp]
 push eax
-mov ebx,eax
 call _@_circleArea
 push eax
 call toString
@@ -681,14 +583,10 @@ pushad
 push eax
 call print
 popad 
-; r circleArea ; 
-push ebx
-call _@_circleArea
 ; } elseif ( choise 3 == ) { 
-add esp,4
 popad 
-jmp ifBlock9end
-if10end:
+jmp ifBlock8end
+if9end:
 mov eax,3
 mov ebx,[esp]
 cmp ebx,eax
@@ -699,10 +597,10 @@ eq2ne:
 xor ebx,ebx
 eq2end:
 cmp ebx,0
-je if11end
+je if10end
 pushad 
 ; "x: " output ; 
-mov eax,offset literal43
+mov eax,offset literal36
 pushad 
 push eax
 call print
@@ -726,17 +624,109 @@ pushad
 push eax
 call print
 popad 
-; } ; 
+; } elseif ( choise 4 == ) { 
 add esp,4
 popad 
+jmp ifBlock8end
+if10end:
+mov eax,4
+mov ebx,[esp]
+cmp ebx,eax
+jne eq3ne
+mov ebx,1
+jmp eq3end
+eq3ne:
+xor ebx,ebx
+eq3end:
+cmp ebx,0
+je if11end
+pushad 
+; "x: " output ; 
+mov eax,offset literal36
+pushad 
+push eax
+call print
+popad 
+; inputInteger sqrt toString output ; 
+call inputInteger
+push eax
+call _@_sqrt
+push eax
+call toString
+pushad 
+push eax
+call print
+popad 
+; } elseif ( choise 5 == ) { 
+popad 
+jmp ifBlock8end
 if11end:
-ifBlock9end:
+mov eax,5
+mov ebx,[esp]
+cmp ebx,eax
+jne eq4ne
+mov ebx,1
+jmp eq4end
+eq4ne:
+xor ebx,ebx
+eq4end:
+cmp ebx,0
+je if12end
+pushad 
+; create integer a ; 
+xor eax,eax
+push eax
+; a inputInteger = ; 
+mov ebx,eax
+call inputInteger
+mov ebx,eax
+mov [esp],ebx
+; a inc ; 
+mov eax,[esp]
+push eax
+call _@_inc
+mov eax,[esp]
+mov [esp+4],eax
+add esp,4
+; a toString output ; 
+mov eax,[esp]
+push eax
+mov ebx,eax
+call toString
+pushad 
+push eax
+call print
+popad 
+; } else { 
+add esp,4
+popad 
+jmp ifBlock8end
+if12end:
+pushad 
+; "Error" output ; 
+mov eax,offset literal39
+pushad 
+push eax
+call print
+popad 
+; return ( 0 1 - ) ; 
+mov eax,1
+mov ebx,0
+sub ebx,eax
+xchg ebx,eax
+add esp,64
+push eax
+call ExitProcess
+; } ; 
+popad 
+if13end:
+ifBlock8end:
 ; return ( 0 ) ; 
 mov eax,0
 add esp,4
 push eax
 call ExitProcess
-; } ; 
+; } 
 add esp,4
 main ENDP
 

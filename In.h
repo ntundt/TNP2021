@@ -5,21 +5,21 @@
 #define IN_MAX_LEN_TEXT 1024*1024
 #define IN_CODE_ENDL '\n'
 #define IN_CODE_TABLE {\
-                                                                          /*\n                   \r*/              \
+    /*                                                                      \n                   \r             */ \
 	IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::T, IN::F, IN::F, IN::I, IN::F, IN::F,\
 	IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F,\
-	/*spc                                                     (      )      *?     +      ,      -              */ \
+	/*spc    !      "      #      $      %      &      '      (      )      *      +      ,      -      .      /*/ \
 	IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T,\
-	/*0      1      2      3      4      5      6      7      8      9             ;             =              */ \
+	/*0      1      2      3      4      5      6      7      8      9      :      ;      <      =      >      ?*/ \
 	IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T,\
-    /*       A      B      C      D      E      F      G      H      I      J      K      L      M      N      O*/ \
+    /*@      A      B      C      D      E      F      G      H      I      J      K      L      M      N      O*/ \
 	IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T,\
-	/*P      Q      R      S      T      U      V      W      X      Y      Z                                   */ \
+	/*P      Q      R      S      T      U      V      W      X      Y      Z      [      \      ]      ^      _*/ \
 	IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T,\
-	/*       a      b      c      d      e      f      g      h      i      j      k      l      m      n      o*/ \
+	/*`      a      b      c      d      e      f      g      h      i      j      k      l      m      n      o*/ \
 	IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T,\
-	/*p      q      r      s      t      u      v      w      x      y      z      {      |      }              */ \
-	IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T,\
+	/*p      q      r      s      t      u      v      w      x      y      z      {      |      }      ~       */ \
+	IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::F,\
 																												   \
 	IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F,\
 	IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F, IN::F,\
@@ -33,7 +33,7 @@
 	IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T,\
 	/*ð      ñ      ò      ó      ô      õ      ö      ÷      ø      ù      ú      û      ü      ý      þ      ÿ*/ \
 	IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T, IN::T,\
-	}
+}
 
 namespace In
 {

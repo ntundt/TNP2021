@@ -1,0 +1,116 @@
+create integer function main() {
+    if (1 < 2) {
+        output("< test #1 success\n");
+    } else {
+        output("< test #1 fail");
+    };
+
+    if (2 < 1) {
+        output("< test #2 fail\n");
+    } else {
+        output("< test #2 success\n");
+    };
+
+
+    if (2 > 1) {
+        output("> test #1 success\n");
+    } else {
+        output("> test #1 fail");
+    };
+
+    if (1 > 2) {
+        output("> test #2 fail\n");
+    } else {
+        output("> test #2 success\n");
+    };
+
+
+    if (2 >= 1) {
+        output(">= test #1 success\n");
+    } else {
+        output(">= test #1 fail\n");
+    };
+
+    if (1 >= 1) {
+        output(">= test #2 success\n");
+    } else {
+        output(">= test #2 fail\n");
+    };
+
+    if (1 >= 2) {
+        output(">= test #3 fail\n");
+    } else {
+        output(">= test #3 success\n");
+    };
+
+
+    if (1 <= 2) {
+        output("<= test #1 success\n");
+    } else {
+        output("<= test #1 fail\n");
+    };
+
+    if (1 <= 1) {
+        output("<= test #2 success\n");
+    } else {
+        output("<= test #2 fail\n");
+    };
+
+    if (2 <= 1) {
+        output("<= test #3 fail\n");
+    } else {
+        output("<= test #3 success\n");
+    };
+
+
+    if (1 == 1) {
+        output("== test #1 success\n");
+    } else {
+        output("== test #1 fail\n");
+    };
+
+    if (1 == 2) {
+        output("== test #2 fail\n");
+    } else {
+        output("== test #2 success\n");
+    };
+
+    if ("test1" == "test1") {
+        output("== test #3 success\n");
+    } else {
+        output("== test #3 fail\n");
+    };
+    
+    if ("test1" == "test2") {
+        output("== test #4 fail\n");
+    } else {
+        output("== test #4 success\n");
+    };
+
+
+    if (1 != 1) {
+        output("!= test #1 fail\n");
+    } else {
+        output("!= test #1 success\n");
+    };
+
+    if (1 != 2) {
+        output("!= test #2 success\n");
+    } else {
+        output("!= test #2 fail\n");
+    };
+
+    if ("test1" != "test1") {
+        output("!= test #3 fail\n");
+    } else {
+        output("!= test #3 success\n");
+    };
+    
+    if ("test1" != "test2") {
+        output("!= test #4 success\n");
+    } else {
+        output("!= test #4 fail\n");
+    };
+
+    return(0);
+};

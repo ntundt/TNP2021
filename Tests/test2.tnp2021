@@ -1,0 +1,5 @@
+create integer function main() {
+    output("test"+"1");
+    output(toString(10d));
+    return(0);
+};

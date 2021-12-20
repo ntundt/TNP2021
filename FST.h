@@ -30,6 +30,6 @@ namespace FSM
 		FiniteStateMachine(short numberOfStates, State n, ...);
 	};
 
-	bool parseChain(FiniteStateMachine& fst, char* chain);
+	bool parseChain(FiniteStateMachine& fst, const char* chain);
 
 }

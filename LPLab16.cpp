@@ -9,19 +9,18 @@
 #include "PolishNotation.h"
 #include "Semantics.h"
 
-
 #include "CodeGenerator.h"
+
+#include "string.h"
 
 #include <chrono>
 
-const int stdlibFunctionCount = 6;
+const int stdlibFunctionCount = 4;
 IT::Entry stdlib[] = {
 	{ 0, "toInteger", "", 1, { IT::IdDatatype::string }, IT::IdDatatype::integer, IT::IdType::function, 0, true },
 	{ 0, "toString", "", 1, { IT::IdDatatype::integer }, IT::IdDatatype::string, IT::IdType::function, 0, true },
 	{ 0, "inputInteger", "", 0, { }, IT::IdDatatype::integer, IT::IdType::function, 0, true },
-	{ 0, "inputString", "", 0, { }, IT::IdDatatype::string, IT::IdType::function, 0, true },
-	{ 0, "shiftRight", "", 2, { IT::IdDatatype::integer, IT::IdDatatype::integer }, IT::IdDatatype::integer, IT::IdType::function, 0, true },
-	{ 0, "shiftLeft", "", 2, { IT::IdDatatype::integer, IT::IdDatatype::integer }, IT::IdDatatype::integer, IT::IdType::function, 0, true },
+	{ 0, "inputString", "", 0, { }, IT::IdDatatype::string, IT::IdType::function, 0, true }
 };
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -35,9 +34,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	try
 	{
 		Parm::PARM parm = Parm::getparm(argc, argv);
-		std::wcout << parm.in << std::endl
-			<< parm.out << std::endl
-			<< parm.log << std::endl;
+		std::wcout << L"--in  " << parm.in << L'\n'
+			<< L"--out " << parm.out << L'\n'
+			<< L"--log " << parm.log << L'\n';
 		
 		output = parm.output;
 
@@ -69,6 +68,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		std::cout << "Синаксический анализ успешно завершен." << std::endl;
 
 		Semantics::RunAllChecks(lexemeTable, identifierTable);
+
+		std::string lextable = LT::ToTable(lexemeTable);
 
 		int index = 0;
 		int nested = 0;
@@ -148,13 +149,12 @@ int _tmain(int argc, _TCHAR* argv[])
 		std::string program = CodeGenerator::GenerateCode(lexemeTable, identifierTable);
 		std::cout << "Генерация кода успешно завершена." << std::endl;
 
-		std::string lextable = LT::ToString(lexemeTable);
-		std::cout << "Таблица лексем:" << lextable;
-		std::cout << std::endl << std::endl;
+		std::cout << "Таблица лексем:\n" << lextable;
+		std::cout << "\n\n";
 		Log::WriteLine(log, "---- Таблица лексем:\n", lextable.c_str(), "\n", "");
 
 		std::string idtable = IT::ToString(identifierTable);
-		std::cout << "Таблица идентификаторов: " << std::endl;
+		std::cout << "Таблица идентификаторов: \n" << idtable;
 		Log::WriteLine(log, "---- Таблица идентификаторов:\n", idtable.c_str(), "\n", "");
 
 		Log::Close(log);
@@ -162,8 +162,41 @@ int _tmain(int argc, _TCHAR* argv[])
 		std::ofstream out(parm.out);
 		out << program;
 		out.close();
+		
+		if (parm.compileAsm)
+		{
+			std::stringstream s;
+			s << "ml.exe /DYNAMICBASE \"kernel32.lib\" \"user32.lib\" \"gdi32.lib\" \"winspool.lib\" \"comdlg32.lib\" \"advapi32.lib\" \"shell32.lib\" \"ole32.lib\" \"oleaut32.lib\" \"uuid.lib\" \"odbc32.lib\" \"odbccp32.lib\" \""; 
+			char* buffer = new char[512];
+			char* outbuffer = new char[512];
 
-		system("ml.exe /MANIFEST /LTCG:incremental /NXCOMPAT /DYNAMICBASE \"kernel32.lib\" \"user32.lib\" \"gdi32.lib\" \"winspool.lib\" \"comdlg32.lib\" \"advapi32.lib\" \"shell32.lib\" \"ole32.lib\" \"oleaut32.lib\" \"uuid.lib\" \"odbc32.lib\" \"odbccp32.lib\" /DEBUG /MACHINE:X86 /OPT:REF /SAFESEH:NO /INCREMENTAL:NO /SUBSYSTEM:CONSOLE /OPT:ICF /ERRORREPORT:PROMPT /NOLOGO /TLBID:1 test.tnp2021.out -link /subsystem:console");
+			int stdlibpathlength = wcslen(argv[0]) + wcslen(L"TNPSTL.lib") + 2;
+			char* stdlibpath = new char[stdlibpathlength];
+
+			buffer[511] = '\0';
+			size_t* charConverted = new size_t(0);
+			
+			wcstombs_s(charConverted, buffer, 512, argv[0], 512);
+			std::string execPath(buffer);
+			size_t pos = execPath.find_last_of('/');
+			if (pos != std::string::npos)
+			{
+				execPath.resize(pos + 1);
+			}
+			else
+			{
+				pos = execPath.find_last_of('\\');
+				execPath.resize(pos + 1);
+			}
+			wcstombs_s(charConverted, outbuffer, 512, parm.out, 512);
+			execPath += "TNPSTL.lib";
+			s << execPath;
+			s << "\" /DEBUG /INCREMENTAL:NO ";
+			s << outbuffer;
+			s << " -link /LTCG /subsystem:console";
+
+			system(s.str().c_str());
+		}
 	}
 	catch (Error::ERROR e)
 	{
@@ -173,7 +206,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 		else
 		{
-			std::cout << "Ошибка " << e.id << ": " << e.message << '\n';
+			std::cout << "Ошибка " << e.id << ", строка " << e.inext.line << ", столбец " << e.inext.col << ": " << e.message << '\n';
 			Log::WriteError(log, e);
 			Log::Close(log);
 		}

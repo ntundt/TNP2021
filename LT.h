@@ -36,21 +36,31 @@ namespace LT
 {
 	typedef char lextype_t;
 
+	// Запись в таблице лексем
 	struct Entry
 	{
+		// Лексема
 		lextype_t lexemeType = LEX_EMPTY;
+		// Номер строки лексемы
 		int stringNumber = 0;
+		// Позиция лексемы в строке
 		int stringPosition = 0;
+		// Номер идентификатора или литерала в таблице идентификаторов
 		int identifierTableIndex = LT_TI_NULLIDX;
+		// Лексема, какой она была в исходном коде программы
 		char* originalLexeme = nullptr;
 		Entry(char lexem, int stringNumber, int stringPosition);
 		Entry();
 	};
 
+	// Сама таблица лексем
 	struct LexTable
 	{
+		// Максимальный размер таблицы лексем
 		int maxSize;
+		// Текущий размер таблицы лексем
 		int size;
+		// Массив, представляющий саму таблицу лексем
 		Entry* table;
 	};
 
@@ -67,6 +77,8 @@ namespace LT
 	char* GetLine(LexTable& lexTable, int index);
 
 	void Delete(LexTable& lextable);
+
+	std::string ToTable(LexTable& lextable);
 
 	std::string ToString(LexTable& lextable);
 

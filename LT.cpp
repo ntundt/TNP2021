@@ -52,9 +52,33 @@ namespace LT {
 			if (lextable.table[i].stringNumber != lineIndex)
 			{
 				lineIndex = lextable.table[i].stringNumber;
-				buffer << '\n' << std::setw(4) << std::left << lineIndex;
+				buffer << '\n' << std::setw(4) << std::right << lineIndex << ' ';
 			}
 			buffer << lextable.table[i].lexemeType;
+		}
+		return buffer.str();
+	}
+
+	std::string ToTable(LexTable& lextable)
+	{
+		std::stringstream buffer;
+		buffer << "|  №  | Тип | ТИ№ | Строка | Столбец |Лексема                         |";
+		for (int i = 0; i < lextable.size; i++)
+		{
+			buffer << "\n|" << std::setw(5) << std::left << i
+				<< '|' << "  " << lextable.table[i].lexemeType << "  "
+				<< '|' << std::setw(5) << std::left << lextable.table[i].identifierTableIndex
+				<< '|' << std::setw(8) << std::left << lextable.table[i].stringNumber
+				<< '|' << std::setw(9) << std::left << lextable.table[i].stringPosition
+				<< '|' ;
+			if (lextable.table[i].originalLexeme != nullptr)
+			{
+				buffer << std::setw(32) << std::left << lextable.table[i].originalLexeme << '|';
+			}
+			else
+			{
+				buffer << std::setw(32) << " " << '|';
+			}
 		}
 		return buffer.str();
 	}
